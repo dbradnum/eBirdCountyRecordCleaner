@@ -1,13 +1,16 @@
+library(matrixStats) # important - load this first, since otherwise clashes with tidyverse::count
 library(DT)
 library(shiny)
 library(readr)
 library(dplyr)
+library(tidyr)
 library(stringr)
 library(purrr)
 library(lubridate)
 library(sgo)
 library(janitor)
 library(htmltools)
+library(sf)
 
 source("helpers/eBirdFileHelpers.R")
 
@@ -32,7 +35,11 @@ shinyServer(function(input, output) {
       BOU_category = category
     )
   
-  # TODO: factor out observer data separately, to avoid full reload of everything
+  regions = read_csv("refData/eBirdRegions.csv")
+  
+  hotspots = read_csv("refData/GBHotspots.csv") %>% 
+    inner_join(regions,by = c("subnational2Code" = "code")) %>% 
+    rename(county = name)
   
   observerData = reactive({
     req(input$uploadUsers$datapath)
@@ -86,7 +93,10 @@ shinyServer(function(input, output) {
     
     allFiltered$os = os
     
-    output = allFiltered %>% select(
+    # find and append details of nearest hotspots
+    withHotspots = attachNearestHotspots(allFiltered, hotspots)
+    
+    output = withHotspots %>% select(
       species = BOU_Ebird_common_name,
       scientific_name,
       subspecies_common_name,
@@ -104,6 +114,7 @@ shinyServer(function(input, output) {
       # observation_day:observation_year,
       species_comments,
       approved,
+      contains("nearestHotspot"),
       any_of("full_name"))
     
     output

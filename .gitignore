@@ -40,5 +40,6 @@ vignettes/*.pdf
 
 rsconnect/*
 appTestInput/*
+localTemp/*
 
 instructions.html

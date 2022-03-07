@@ -1,7 +1,4 @@
-library(readr)
-library(dplyr)
-library(stringr)
-library(janitor)
+
 
 get_header <- function(x, sep = "\t") {
   readLines(x, n = 1) %>%
@@ -82,6 +79,7 @@ colsToKeep <- c(
   "subspecies_scientific_name",
   "observation_count",
   "locality",
+  "locality_type",
   "observation_date",
   "species_comments",
   "breeding_code",
@@ -125,3 +123,52 @@ extractDataFromEbirdZip = function(zipFile){
   
 }
 
+
+attachNearestHotspots = function(eBirdRecords,hotspots){
+  sites = eBirdRecords %>% 
+    count(county,locality, locality_type,latitude, longitude,
+          name = "nRecords")
+  
+  includedCounties = unique(sites$county)
+  
+  hotspotsToCheck = hotspots %>% 
+    filter(county %in% includedCounties) 
+  
+  nonHotspots = sites %>% 
+    filter(locality_type != "H") %>% 
+    mutate(siteId = seq_along(locality)) %>% 
+    select(-county,-locality_type)
+  
+  hotspotsGeo <- st_as_sf(hotspotsToCheck, 
+                          coords = c("lng", "lat"),
+                          crs = 4326)
+  nonHotspotsGeo = st_as_sf(nonHotspots, 
+                            coords = c("longitude", "latitude"),
+                            crs = 4326)
+  
+  dist_matrix   <- st_distance(nonHotspotsGeo, hotspotsGeo)          
+  
+  dist_matrix <- as_tibble(round(dist_matrix)) 
+  names(dist_matrix) <- hotspotsToCheck$locId
+  
+  # find the 5 nearest stations and create new data frame
+  nearest = dist_matrix %>% 
+    mutate(siteId = nonHotspots$siteId) %>% 
+    pivot_longer(-siteId, names_to = "locId",values_to = "dist") %>% 
+    filter(!is.na(dist)) %>%  
+    group_by(siteId) %>% 
+    arrange(dist) %>% 
+    slice_head(n = 2) %>%
+    mutate(distanceRank = 1:2) %>% 
+    ungroup()  %>%
+    inner_join(hotspots %>% select(locName,lat,lng,locId),by = "locId") %>% 
+    pivot_wider(id_cols = siteId, 
+                names_from = distanceRank , 
+                values_from = c(locName,dist), 
+                names_glue = "nearestHotspot_{.value}{distanceRank}")   %>% 
+    inner_join(nonHotspots) %>% 
+    select(locality, latitude,longitude,contains("_"))
+  
+  eBirdRecords %>% inner_join(nearest)
+  
+}
