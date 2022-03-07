@@ -26,6 +26,8 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(type = "tabs",
+                  tabPanel("Instructions",
+                           includeMarkdown("instructions.md")),
                   tabPanel("Data Table", 
                            DTOutput('tbl') %>% 
                              withSpinner(color="#0dc5c1", type = 4)),
