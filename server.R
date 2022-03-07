@@ -1,3 +1,5 @@
+suppressPackageStartupMessages(
+{
 library(matrixStats) # important - load this first, since otherwise clashes with tidyverse::count
 library(DT)
 library(shiny)
@@ -11,6 +13,7 @@ library(sgo)
 library(janitor)
 library(htmltools)
 library(sf)
+})
 
 source("helpers/eBirdFileHelpers.R")
 
@@ -27,7 +30,8 @@ options(shiny.maxRequestSize = 100*1024^2)
 shinyServer(function(input, output) {
   # import BOU list for species names
   bou <- read_csv("refData/BOU_British_List_working-to-10th-and-54th-w-11_2-v3.csv",
-                  locale = locale(encoding = "CP1252")) %>%
+                  locale = locale(encoding = "CP1252"),
+                  show_col_types = FALSE) %>%
     clean_names() %>%
     select(1:4) %>%
     rename(
@@ -35,9 +39,9 @@ shinyServer(function(input, output) {
       BOU_category = category
     )
   
-  regions = read_csv("refData/eBirdRegions.csv")
+  regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
-  hotspots = read_csv("refData/GBHotspots.csv") %>% 
+  hotspots = read_csv("refData/GBHotspots.csv",show_col_types = FALSE) %>% 
     inner_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
@@ -116,6 +120,7 @@ shinyServer(function(input, output) {
       approved,
       contains("nearestHotspot"),
       any_of("full_name"))
+  
     
     output
     

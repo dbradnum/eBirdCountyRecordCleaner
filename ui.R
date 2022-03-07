@@ -1,7 +1,10 @@
-library(DT)
-library(shiny)
-library(shinycssloaders)
-library(leaflet)
+suppressPackageStartupMessages(
+  {
+    library(DT)
+    library(shiny)
+    library(shinycssloaders)
+    library(leaflet)
+  })
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -26,17 +29,17 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(type = "tabs",
-                  tabPanel("Instructions",
-                           includeMarkdown("instructions.md")),
                   tabPanel("Data Table", 
                            DTOutput('tbl') %>% 
                              withSpinner(color="#0dc5c1", type = 4)),
                   tabPanel("Map", leafletOutput("map",height = 600) %>% 
-                             withSpinner(color="#0dc5c1", type = 4),
-                  )
+                             withSpinner(color="#0dc5c1", type = 4)),
+                  tabPanel("Instructions",
+                           includeMarkdown("instructions.md"))
       )
-      
-      
     )
+    
+    
   )
-))
+)
+)

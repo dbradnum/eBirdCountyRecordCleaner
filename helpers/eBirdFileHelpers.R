@@ -161,14 +161,15 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
     slice_head(n = 2) %>%
     mutate(distanceRank = 1:2) %>% 
     ungroup()  %>%
-    inner_join(hotspots %>% select(locName,lat,lng,locId),by = "locId") %>% 
+    inner_join(hotspots %>% select(locName,lat,lng,locId),
+               by = "locId") %>% 
     pivot_wider(id_cols = siteId, 
                 names_from = distanceRank , 
                 values_from = c(locName,dist), 
                 names_glue = "nearestHotspot_{.value}{distanceRank}")   %>% 
-    inner_join(nonHotspots) %>% 
+    inner_join(nonHotspots,by = "siteId") %>% 
     select(locality, latitude,longitude,contains("_"))
   
-  eBirdRecords %>% inner_join(nearest)
+  eBirdRecords %>% inner_join(nearest, by = c("locality", "latitude", "longitude"))
   
 }
