@@ -172,6 +172,6 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
     inner_join(nonHotspots,by = "siteId") %>% 
     select(locality, latitude,longitude,contains("_"))
   
-  eBirdRecords %>% inner_join(nearest, by = c("locality", "latitude", "longitude"))
+  eBirdRecords %>% left_join(nearest, by = c("locality", "latitude", "longitude"))
   
 }
