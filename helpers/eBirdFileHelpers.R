@@ -86,6 +86,8 @@ colsToKeep <- c(
   "breeding_category",
   "behavior_code",
   "age_sex",
+  "country",
+  "state",
   "county",
   "latitude",
   "longitude",
@@ -126,13 +128,13 @@ extractDataFromEbirdZip = function(zipFile){
 
 attachNearestHotspots = function(eBirdRecords,hotspots){
   sites = eBirdRecords %>% 
-    count(county,locality, locality_type,latitude, longitude,
+    count(country, state, county,locality, locality_type,latitude, longitude,
           name = "nRecords")
   
-  includedCounties = unique(sites$county)
+  includedCounties = sites %>% distinct(country,state,county)
   
   hotspotsToCheck = hotspots %>% 
-    filter(county %in% includedCounties) 
+    inner_join(includedCounties) 
   
   nonHotspots = sites %>% 
     filter(locality_type != "H") %>% 

@@ -42,7 +42,7 @@ shinyServer(function(input, output) {
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
   hotspots = read_csv("refData/GBHotspots.csv",show_col_types = FALSE) %>% 
-    inner_join(regions,by = c("subnational2Code" = "code")) %>% 
+    left_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
   observerData = reactive({

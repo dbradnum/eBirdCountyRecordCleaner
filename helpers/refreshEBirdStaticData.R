@@ -3,11 +3,13 @@
 
 library(rebird)
 library(readr)
+library(purrr)
 
-hotspots = ebirdhotspotlist("GB")
+countriesToRetrieve = c("GB","IM")
+hotspots = map_dfr(countriesToRetrieve,ebirdhotspotlist)
 
 write_csv(hotspots,"refData/GBHotspots.csv")
 
-regions = ebirdsubregionlist("subnational2","GB")
+regions = map_dfr(countriesToRetrieve,~ebirdsubregionlist("subnational2",.))
 
 write_csv(regions,"refData/eBirdRegions.csv")
