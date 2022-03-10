@@ -19,6 +19,8 @@ source("helpers/eBirdFileHelpers.R")
 
 options(shiny.maxRequestSize = 100*1024^2)
 
+ALL_SPECIES = "-- All Species --"
+
 # TODO:
 # - adjust upload to take zip output straight from eBird
 # - add instructions panel
@@ -139,12 +141,25 @@ shinyServer(function(input, output) {
   )
   
   output$map <- renderLeaflet({
-    recordsByLocation = data() %>% 
+    speciesFilter = input$cboMapSpecies
+    
+    dataToMap = data()
+    if (!is.null(speciesFilter) && 
+        nchar(speciesFilter) > 0 && 
+        speciesFilter != ALL_SPECIES)
+    {
+      dataToMap = dataToMap %>% 
+        filter(species == speciesFilter)
+    }
+    
+    recordsByLocation = dataToMap %>% 
       count(locality, latitude,longitude)
     
     leaflet(recordsByLocation) %>% 
       addTiles() %>% 
       addMarkers(label = ~htmlEscape(str_glue("{locality}, {n} records")),
+                 lng = ~longitude,
+                 lat = ~latitude,
                  clusterOptions = markerClusterOptions()
       )
     
@@ -157,5 +172,20 @@ shinyServer(function(input, output) {
       write_csv(data(), file, na = "") 
     }
   )
+  
+  observeEvent(data(),
+               {
+                 d = data()
+                 distinctSp = d %>% 
+                   distinct(species) %>% 
+                   arrange(species) %>% 
+                   pull()
+                 
+                 updateSelectizeInput(inputId = "cboMapSpecies",
+                                      choices = c(ALL_SPECIES,distinctSp),
+                                      selected = character(0),
+                                      server = TRUE
+                                      )
+               })
 
 })

@@ -32,7 +32,11 @@ shinyUI(fluidPage(
                   tabPanel("Data Table", 
                            DTOutput('tbl') %>% 
                              withSpinner(color="#0dc5c1", type = 4)),
-                  tabPanel("Map", leafletOutput("map",height = 600) %>% 
+                  tabPanel("Map", 
+                           selectizeInput("cboMapSpecies",
+                                          "Filter Species:", 
+                                          choices = NULL),
+                           leafletOutput("map",height = 600) %>% 
                              withSpinner(color="#0dc5c1", type = 4)),
                   tabPanel("Instructions",
                            includeMarkdown("instructions.md"))
