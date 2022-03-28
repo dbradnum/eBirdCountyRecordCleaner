@@ -13,7 +13,6 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 - [ ] Match to list of BBRC species, to output an additional column (NB need taxonomy to work well here)
 - [ ] Match to eBird barchart data (ie species frequency per week)
 - [ ] Include eBird taxon type in output (ie species/spuh/hybrid/etc)
-- [ ] 
 
 
 ### Locations
