@@ -27,6 +27,7 @@ ALL_SPECIES = "-- All Species --"
 # - add input validation (guarding against dodgy files)
 # - add quick wins on data table (eg col filters)
 # - apply suitable theme
+# - work out why BBRC subspecies doesn't work
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -35,11 +36,20 @@ shinyServer(function(input, output) {
                   locale = locale(encoding = "CP1252"),
                   show_col_types = FALSE) %>%
     clean_names() %>%
-    select(1:4) %>%
+    select(1:5) %>%
     rename(
       BOU_vernacular_name = british_english_vernacular_name,
       BOU_category = category
-    )
+    ) %>% 
+    mutate(codes = replace_na(codes,""),
+           BBRC_species = str_detect(codes,"†"),
+           BBRC_subspecies = str_detect(codes,"‡"))
+  
+  ebirdTaxonomy = read_csv("refData/eBird-Clements-v2021-integrated-checklist-August-2021.csv",
+                           show_col_types = F) %>% 
+    clean_names() %>% 
+    select(english_name,category) %>% 
+    rename(eBird_category = category)
   
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
@@ -73,10 +83,11 @@ shinyServer(function(input, output) {
     }
     
     # join to BOU names; coalesce to give a single non empty column
-    # TODO: can we just use eBird taxonomy here?
     allFiltered <- raw %>%
       left_join(bou, names, by = "scientific_name") %>%
-      mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name))
+      mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
+      left_join(ebirdTaxonomy,by = c("common_name" = "english_name"))
+    
     
     # pull out separate date cols
     allFiltered <- allFiltered %>%
@@ -108,6 +119,8 @@ shinyServer(function(input, output) {
       scientific_name,
       subspecies_common_name,
       subspecies_scientific_name,
+      BBRC_species,
+      eBird_category,
       observation_count,
       observation_date,
       breeding_code:age_sex,
