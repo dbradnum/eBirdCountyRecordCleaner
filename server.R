@@ -98,6 +98,7 @@ shinyServer(function(input, output) {
     os <- gsub(" ", "", os)
     
     allFiltered$os = os
+    allFiltered$os1km = paste0(str_sub(os,1,4),str_sub(os,8,9))
     
     # find and append details of nearest hotspots
     withHotspots = attachNearestHotspots(allFiltered, hotspots)
@@ -115,6 +116,7 @@ shinyServer(function(input, output) {
       latitude,
       longitude,
       os,
+      os1km,
       contains("nearestHotspot"),
       time_observations_started,
       observation_date, 
