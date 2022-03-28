@@ -20,7 +20,7 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 - [x] Include OS 1km square, as well as full granular detail
 - [x] Move nearest hotspot columns to sit next to other location info
 - [ ] Option to filter results by shapefile boundary (either from pre-specified list - Steve to share - or upload)
-- [ ] Option to filter results by custom boundary (eg rectangular bounding box or custom drawn?)
+- [ ] Option to filter results by custom boundary (eg rectangular bounding box or custom drawn? Check out mapedit package...)
 - [ ] Option to join to user-specified location name mapping
 
 
