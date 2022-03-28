@@ -22,6 +22,7 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 - [ ] Option to filter results by shapefile boundary (either from pre-specified list - Steve to share - or upload)
 - [ ] Option to filter results by custom boundary (eg rectangular bounding box or custom drawn?)
 - [ ] Option to join to user-specified location name mapping
+- [ ] Explore possibility of reverse-geocoding from lat-long to nearest named location. Is there a viable free option?
 
 
 ### Summarising data

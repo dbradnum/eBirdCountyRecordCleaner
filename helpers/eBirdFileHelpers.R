@@ -153,8 +153,8 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
   
   dist_matrix <- as_tibble(round(dist_matrix)) 
   names(dist_matrix) <- hotspotsToCheck$locId
-  
-  # find the 5 nearest stations and create new data frame
+
+  # find the 2 nearest hotspots and create new data frame
   nearest = dist_matrix %>% 
     mutate(siteId = nonHotspots$siteId) %>% 
     pivot_longer(-siteId, names_to = "locId",values_to = "dist") %>% 

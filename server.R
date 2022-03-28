@@ -22,9 +22,6 @@ options(shiny.maxRequestSize = 100*1024^2)
 ALL_SPECIES = "-- All Species --"
 
 # TODO:
-# - adjust upload to take zip output straight from eBird
-# - add instructions panel
-# - add input validation (guarding against dodgy files)
 # - add quick wins on data table (eg col filters)
 # - apply suitable theme
 # - work out why BBRC subspecies doesn't work
