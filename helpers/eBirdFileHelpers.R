@@ -93,7 +93,8 @@ colsToKeep <- c(
   "longitude",
   "time_observations_started",
   "observer_id",
-  "approved"
+  "approved",
+  "reviewed"
 )
 
 readEbirdRawFile <- function(fileName, colsToKeep) {

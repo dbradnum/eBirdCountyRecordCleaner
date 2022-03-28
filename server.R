@@ -115,12 +115,13 @@ shinyServer(function(input, output) {
       latitude,
       longitude,
       os,
+      contains("nearestHotspot"),
       time_observations_started,
       observation_date, 
       # observation_day:observation_year,
       species_comments,
       approved,
-      contains("nearestHotspot"),
+      reviewed,
       any_of("full_name"))
   
     
