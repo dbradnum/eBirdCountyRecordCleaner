@@ -1,18 +1,19 @@
 suppressPackageStartupMessages(
 {
-library(matrixStats) # important - load this first, since otherwise clashes with tidyverse::count
-library(DT)
-library(shiny)
-library(readr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(purrr)
-library(lubridate)
-library(sgo)
-library(janitor)
-library(htmltools)
-library(sf)
+  library(matrixStats) # important - load this first, since otherwise clashes with tidyverse::count
+  library(DT)
+  library(shiny)
+  library(readr)
+  library(dplyr)
+  library(tidyr)
+  library(stringr)
+  library(purrr)
+  library(lubridate)
+  library(sgo)
+  library(janitor)
+  library(htmltools)
+  library(sf)
+  library(fs)
 })
 
 source("helpers/eBirdFileHelpers.R")
@@ -25,6 +26,7 @@ ALL_SPECIES = "-- All Species --"
 # - add quick wins on data table (eg col filters)
 # - apply suitable theme
 # - work out why BBRC subspecies doesn't work
+# - make shapefile upload robust to zero or multiple SHPs
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -54,6 +56,21 @@ shinyServer(function(input, output) {
     left_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
+  
+  values <- reactiveValues(
+    shp_upload_state = NULL
+  )
+  
+  observeEvent(input$uploadShapefile, {
+    values$shp_upload_state <- 'uploaded'
+  })
+  
+  observeEvent(input$resetShapeFile, {
+    values$shp_upload_state <- 'reset'
+  })
+  
+  
+  
   observerData = reactive({
     req(input$uploadUsers$datapath)
     
@@ -69,8 +86,40 @@ shinyServer(function(input, output) {
     
   })
   
+  customRegionBoundary = reactive({
+    # req(input$uploadShapefile)
+    
+    if (is.null(values$shp_upload_state)) {
+      return(NULL)
+    } else if (values$shp_upload_state == 'uploaded') {
+      
+      unzipPath = file.path(tempfile())
+      unzip(input$uploadShapefile$datapath,exdir = unzipPath)
+      
+      shpFile = dir_info(unzipPath) %>% 
+        filter(str_ends(path,"shp")) %>% 
+        pull(path) %>% 
+        head(1)
+      
+      read_sf(shpFile) %>%  
+        st_transform(27700)
+      
+    } else if (values$shp_upload_state == 'reset') {
+      return(NULL)
+    }
+
+    
+  })
+  
   data <- reactive({
     raw = rawData()
+    
+    counties = raw %>% count(county) %>% arrange(desc(n))
+    nCounties = nrow(counties)
+    topCounty = head(counties$county,1)
+    
+    cat(file = stderr(),
+        str_glue("---------- Uploaded {nrow(raw)} rows data from {nCounties} county; most from {topCounty}\n"))
     
     if (isTruthy(input$uploadUsers)){
       
@@ -78,6 +127,25 @@ shinyServer(function(input, output) {
       
       # join to user database
       raw <- raw %>% left_join(users, by = "observer_id")
+    }
+    
+    if (isTruthy(customRegionBoundary())){
+      regionBounds = customRegionBoundary()
+      
+      sites = raw %>% 
+        count(country, state, county,locality, locality_type,latitude, longitude,
+              name = "nRecords") %>% 
+        st_as_sf(coords = c("longitude", "latitude"),
+                 crs = 4326,
+                 remove = F) %>% 
+        st_transform(27700)
+      
+      filteredSites = sites %>% 
+        filter(st_intersects(.,regionBounds,sparse = F) ) %>% 
+        st_drop_geometry() %>% 
+        select(latitude, longitude)
+      
+      raw = raw %>% inner_join(filteredSites,by = c("latitude","longitude"))
     }
     
     # join to BOU names; coalesce to give a single non empty column

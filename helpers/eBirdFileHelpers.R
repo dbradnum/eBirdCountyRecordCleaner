@@ -135,7 +135,7 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
   includedCounties = sites %>% distinct(country,state,county)
   
   hotspotsToCheck = hotspots %>% 
-    inner_join(includedCounties) 
+    inner_join(includedCounties, by = "county") 
   
   nonHotspots = sites %>% 
     filter(locality_type != "H") %>% 

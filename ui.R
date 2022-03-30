@@ -23,7 +23,12 @@ shinyUI(fluidPage(
       fileInput("uploadUsers", "Choose tab-separated Observer List",
                 accept = c(".txt",".tsv")),
       
-      downloadButton("downloadData", "Download")
+      fileInput("uploadShapefile", "Experimental: Choose region shapefile (zipped)",
+                accept = c(".zip")),
+      actionButton('resetShapeFile', 'Clear Shapefile'),
+      br(),br(),
+      
+      downloadButton("downloadData", "Download CSV")
     ),
     
     # Show a plot of the generated distribution
