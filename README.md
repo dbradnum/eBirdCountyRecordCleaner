@@ -11,13 +11,14 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 ### Filtering records
 - [x] Include "Reviewed" column, indicating whether data has passed through local filter
 - [ ] Match to list of BBRC species, to output an additional column. (Nearly complete - need to deal with anomalies e.g. Jackdaw, where taxonomy doesn't join cleanly)
-- [x] Extend BBRC lookup to also indicate BBRC subspecies
+- [ ] Extend BBRC lookup to also indicate BBRC subspecies
 - [ ] Match to eBird barchart data (ie species frequency per week)
 - [x] Include eBird taxon type in output (ie species/spuh/hybrid/etc)
 
 
 ### Locations
 - [x] Include OS 1km square, as well as full granular detail
+- [ ] Add caveat about location precision to instructions / FAQ page, and include checklist distance where known
 - [x] Move nearest hotspot columns to sit next to other location info
 - [ ] Option to filter results by shapefile boundary (either from pre-specified list - Steve to share - or upload)
 - [ ] Option to filter results by custom boundary (eg rectangular bounding box or custom drawn? Check out mapedit package...)
