@@ -41,6 +41,7 @@ vignettes/*.pdf
 rsconnect/*
 appTestInput/*
 localTemp/*
+rawShapeFiles/*
 
 *.html
 

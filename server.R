@@ -57,7 +57,8 @@ shinyServer(function(input, output) {
   observerData = reactive({
     req(input$uploadUsers$datapath)
     
-    read_tsv(input$uploadUsers$datapath) %>%
+    read_tsv(input$uploadUsers$datapath,
+             show_col_types = F) %>%
       mutate(full_name = paste(first_name, last_name))
   })
   
