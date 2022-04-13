@@ -9,7 +9,7 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 - [ ] Option to upload observer file in zipped format, to speed things up. (How do eBird Central share this?)
 
 ### Filtering records
-- [x] Include "Reviewed" column, indicating whether data has passed through local filter
+- [x] Include "Reviewed" column indicating whether data has passed through local filter
 - [ ] Match to list of BBRC species, to output an additional column. (Nearly complete - need to deal with anomalies e.g. Jackdaw, where taxonomy doesn't join cleanly)
 - [ ] Extend BBRC lookup to also indicate BBRC subspecies
 - [ ] Match to eBird barchart data (ie species frequency per week)
