@@ -23,10 +23,10 @@ shinyUI(fluidPage(
       fileInput("uploadUsers", "Choose tab-separated Observer List",
                 accept = c(".txt",".tsv")),
       
-      fileInput("uploadShapefile", "Experimental: Choose region shapefile (zipped)",
-                accept = c(".zip")),
-      actionButton('resetShapeFile', 'Clear Shapefile'),
-      br(),br(),
+      # fileInput("uploadShapefile", "Experimental: Choose region shapefile (zipped)",
+      #           accept = c(".zip")),
+      # actionButton('resetShapeFile', 'Clear Shapefile'),
+      # br(),br(),
       
       downloadButton("downloadData", "Download CSV")
     ),

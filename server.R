@@ -57,17 +57,17 @@ shinyServer(function(input, output) {
     rename(county = name)
   
   
-  values <- reactiveValues(
-    shp_upload_state = NULL
-  )
-  
-  observeEvent(input$uploadShapefile, {
-    values$shp_upload_state <- 'uploaded'
-  })
-  
-  observeEvent(input$resetShapeFile, {
-    values$shp_upload_state <- 'reset'
-  })
+  # values <- reactiveValues(
+  #   shp_upload_state = NULL
+  # )
+  # 
+  # observeEvent(input$uploadShapefile, {
+  #   values$shp_upload_state <- 'uploaded'
+  # })
+  # 
+  # observeEvent(input$resetShapeFile, {
+  #   values$shp_upload_state <- 'reset'
+  # })
   
   
   
@@ -129,24 +129,24 @@ shinyServer(function(input, output) {
       raw <- raw %>% left_join(users, by = "observer_id")
     }
     
-    if (isTruthy(customRegionBoundary())){
-      regionBounds = customRegionBoundary()
-      
-      sites = raw %>% 
-        count(country, state, county,locality, locality_type,latitude, longitude,
-              name = "nRecords") %>% 
-        st_as_sf(coords = c("longitude", "latitude"),
-                 crs = 4326,
-                 remove = F) %>% 
-        st_transform(27700)
-      
-      filteredSites = sites %>% 
-        filter(st_intersects(.,regionBounds,sparse = F) ) %>% 
-        st_drop_geometry() %>% 
-        select(latitude, longitude)
-      
-      raw = raw %>% inner_join(filteredSites,by = c("latitude","longitude"))
-    }
+    # if (isTruthy(customRegionBoundary())){
+    #   regionBounds = customRegionBoundary()
+    #   
+    #   sites = raw %>% 
+    #     count(country, state, county,locality, locality_type,latitude, longitude,
+    #           name = "nRecords") %>% 
+    #     st_as_sf(coords = c("longitude", "latitude"),
+    #              crs = 4326,
+    #              remove = F) %>% 
+    #     st_transform(27700)
+    #   
+    #   filteredSites = sites %>% 
+    #     filter(st_intersects(.,regionBounds,sparse = F) ) %>% 
+    #     st_drop_geometry() %>% 
+    #     select(latitude, longitude)
+    #   
+    #   raw = raw %>% inner_join(filteredSites,by = c("latitude","longitude"))
+    # }
     
     # join to BOU names; coalesce to give a single non empty column
     allFiltered <- raw %>%
