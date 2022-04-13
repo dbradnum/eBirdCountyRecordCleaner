@@ -2,6 +2,7 @@
 
 get_header <- function(x, sep = "\t") {
   readLines(x, n = 1) %>%
+    # str_trim(side = "right") %>% 
     stringr::str_split(sep) %>%
     `[[`(1) %>%
     trimws()
@@ -102,14 +103,22 @@ readEbirdRawFile <- function(fileName, colsToKeep) {
   colNames <- make_clean_names(header)
   colTypes <- get_col_types(header)
   
+  rowCount = read_tsv(fileName,
+                      show_col_types = F,
+                      n_max = 2,
+                      name_repair = "minimal") %>% nrow()
   
-  raw = read_tsv(fileName,
-                 col_names = colNames,
-                 col_types = colTypes,
-                 skip = 1,
-                 quote = "",
-                 col_select = all_of(colsToKeep)
-  )
+  if (rowCount > 0){
+    read_tsv(fileName,
+             col_names = colNames,
+             col_types = colTypes,
+             skip = 1,
+             quote = "",
+             col_select = all_of(colsToKeep)
+    )
+  } else {
+    tibble()
+  }
 }
 
 extractDataFromEbirdZip = function(zipFile){
