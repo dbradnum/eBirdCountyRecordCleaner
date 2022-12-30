@@ -44,10 +44,10 @@ shinyServer(function(input, output) {
            BBRC_species = str_detect(codes,"†"),
            BBRC_subspecies = str_detect(codes,"‡"))
   
-  ebirdTaxonomy = read_csv("refData/eBird-Clements-v2021-integrated-checklist-August-2021.csv",
+  ebirdTaxonomy = read_csv("refData/NEW_eBird-Clements-v2022-integrated-checklist-October-2022.csv",
                            show_col_types = F) %>% 
     clean_names() %>% 
-    select(english_name,category) %>% 
+    select(primary_com_name,category) %>% 
     rename(eBird_category = category)
   
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
@@ -152,7 +152,7 @@ shinyServer(function(input, output) {
     allFiltered <- raw %>%
       left_join(bou, names, by = "scientific_name") %>%
       mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
-      left_join(ebirdTaxonomy,by = c("common_name" = "english_name"))
+      left_join(ebirdTaxonomy,by = c("common_name" = "primary_com_name"))
     
     
     # pull out separate date cols

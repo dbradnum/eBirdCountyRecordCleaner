@@ -58,7 +58,9 @@ get_col_types <- function(header) {
     "REVIEWED" = "logical",
     "REASON" = "character",
     "TRIP COMMENTS" = "character",
-    "SPECIES COMMENTS" = "character")
+    "SPECIES COMMENTS" = "character",
+    "BREEDING CODE" = "character",
+    "BEHAVIOR CODE" = "character")
   
   # remove any columns not in header
   col_types <- col_types[names(col_types) %in% header]
