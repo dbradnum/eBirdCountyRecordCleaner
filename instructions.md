@@ -1,7 +1,3 @@
----
----
----
-
 # Overview
 
 This app has been designed to help county bird recorders in the UK to clean eBird data for their region, automating a number of steps that may otherwise take time and effort. Specifically, the app will:
