@@ -26,7 +26,7 @@ Once data access is approved, you need to download the data for the county and t
 
 ## Optional: Observer ID list
 
-If you wish to link observer names with the downloaded records, you will also need to request the full eBird observer list from eBird Central - contact [Jenna Curtis](mailto:jenna.curtis@cornell.edu) , explaining why you are requesting this.
+If you wish to link observer names with the downloaded records, you will also need to request the full eBird observer list from eBird Central [email link here], explaining why you are requesting this.
 
 # Using the App
 
