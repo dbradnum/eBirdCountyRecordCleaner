@@ -53,8 +53,8 @@ shinyServer(function(input, output) {
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
   hotspots = read_csv("refData/GBHotspots.csv",show_col_types = FALSE) %>% 
-    left_join(regions,by = c("subnational2Code" = "code")) %>% 
-    rename(county = name)
+    left_join(regions,by = c("subnational1Code" = "code")) %>% 
+    rename(state = name)
   
   
   # values <- reactiveValues(
@@ -118,8 +118,8 @@ shinyServer(function(input, output) {
     nCounties = nrow(counties)
     topCounty = head(counties$county,1)
     
-    cat(file = stderr(),
-        str_glue("---------- Uploaded {nrow(raw)} rows data from {nCounties} county; most from {topCounty}\n"))
+    # cat(file = stderr(),
+    #     str_glue("---------- Uploaded {nrow(raw)} rows data from {nCounties} county; most from {topCounty}\n"))
     
     if (isTruthy(input$uploadUsers)){
       
@@ -150,8 +150,8 @@ shinyServer(function(input, output) {
     
     # join to BOU names; coalesce to give a single non empty column
     allFiltered <- raw %>%
-      left_join(bou, names, by = "scientific_name") %>%
-      mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
+      # left_join(bou, names, by = "scientific_name") %>%
+      # mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
       left_join(ebirdTaxonomy,by = c("common_name" = "primary_com_name"))
     
     
@@ -163,29 +163,15 @@ shinyServer(function(input, output) {
         observation_year = year(observation_date)
       )
     
-    # calculate and add OS grid refs
-    os <- sgo_points(list(longitude = allFiltered$longitude,
-                          latitude = allFiltered$latitude),
-                     epsg = 4326) %>%
-      sgo_lonlat_bng() %>%
-      sgo_bng_ngr() 
-    
-    os = os$ngr
-    
-    os <- gsub(" ", "", os)
-    
-    allFiltered$os = os
-    allFiltered$os1km = paste0(str_sub(os,1,4),str_sub(os,8,9))
-    
     # find and append details of nearest hotspots
     withHotspots = attachNearestHotspots(allFiltered, hotspots)
     
     output = withHotspots %>% select(
-      species = BOU_Ebird_common_name,
+      species = common_name,
       scientific_name,
       subspecies_common_name,
       subspecies_scientific_name,
-      BBRC_species,
+      # BBRC_species,
       eBird_category,
       observation_count,
       observation_date,
@@ -194,8 +180,8 @@ shinyServer(function(input, output) {
       locality,
       latitude,
       longitude,
-      os,
-      os1km,
+      # os,
+      # os1km,
       contains("nearestHotspot"),
       time_observations_started,
       observation_date, 
@@ -251,7 +237,7 @@ shinyServer(function(input, output) {
     filename = function() {
       "cleanedEbirdData.csv"},
     content = function(file) {
-      write_csv(data(), file, na = "") 
+      write_excel_csv(data(), file, na = "") 
     }
   )
   
