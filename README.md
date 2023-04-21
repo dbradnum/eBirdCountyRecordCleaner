@@ -4,7 +4,7 @@ R Shiny app to clean and enrich UK eBird data for onward use in local bird repor
 ## Wish list for enhancements
 
 ### General / Usability
-- [ ] Populate instructions tab
+- [x] Populate instructions tab
 - [ ] Add error handling for invalid input data
 - [ ] Option to upload observer file in zipped format, to speed things up. (How do eBird Central share this?)
 
