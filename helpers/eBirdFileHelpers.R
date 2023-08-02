@@ -131,7 +131,8 @@ extractDataFromEbirdZip = function(zipFile){
   # use basename here just in case the files we want are buried in a subdir
   # (eg if user has rezipped up the eBird download)
   toExtract = contents %>% 
-    filter(str_detect(basename(Name),dataFileNamePattern))
+    filter(str_detect(basename(Name),dataFileNamePattern)) %>% 
+    filter(!str_detect(basename(Name),"sampling")) # exclude sampling files
   
   extracted = unzip(zipFile, files = toExtract$Name, exdir = tempdir())
   
