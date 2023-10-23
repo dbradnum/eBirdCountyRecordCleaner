@@ -114,6 +114,10 @@ shinyServer(function(input, output) {
   data <- reactive({
     raw = rawData()
     
+    # filter, since bizarrely can sometimes end up with data for UK counties 
+    # listed against the wrong country!
+    raw = raw %>% filter(country == "United Kingdom")
+    
     counties = raw %>% count(county) %>% arrange(desc(n))
     nCounties = nrow(counties)
     topCounty = head(counties$county,1)
