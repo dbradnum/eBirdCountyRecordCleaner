@@ -121,26 +121,26 @@ shinyServer(function(input, output) {
   })
   
   data <- reactive({
-    raw = rawData()
+    obs = rawData()
     
     # filter, since bizarrely can sometimes end up with data for UK counties 
     # listed against the wrong country!
-    raw = raw %>% filter(country == "United Kingdom")
+    obs = obs %>% filter(country == "United Kingdom")
     
-    counties = raw %>% count(county) %>% arrange(desc(n))
+    counties = obs %>% count(county) %>% arrange(desc(n))
     nCounties = nrow(counties)
     topCounty = head(counties$county,1)
     
     cat(file = stderr(),
-        str_glue("---------- Uploaded {nrow(raw)} rows data from {nCounties} county; most from {topCounty}\n"))
+        str_glue("---------- Uploaded {nrow(obs)} rows data from {nCounties} county; most from {topCounty}\n\n"))
     
     if (isTruthy(input$uploadUsers)){
 
       users <- observerData()
       
-      rawTbl = raw %>% to_duckdb()
+      rawTbl = obs %>% to_duckdb()
       
-      raw = rawTbl %>% 
+      obs = rawTbl %>% 
         left_join(users,
                   by = "observer_id" ) %>% 
         collect()
@@ -166,14 +166,14 @@ shinyServer(function(input, output) {
     # }
     
     # join to BOU names; coalesce to give a single non empty column
-    allFiltered <- raw %>%
+    obs <- obs %>%
       left_join(bou, names, by = "scientific_name") %>%
       mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
       left_join(ebirdTaxonomy,by = c("common_name" = "primary_com_name"))
     
     
     # pull out separate date cols
-    allFiltered <- allFiltered %>%
+    obs <- obs %>%
       mutate(
         observation_day = day(observation_date),
         observation_month = month(observation_date),
@@ -181,8 +181,8 @@ shinyServer(function(input, output) {
       )
     
     # calculate and add OS grid refs
-    os <- sgo_points(list(longitude = allFiltered$longitude,
-                          latitude = allFiltered$latitude),
+    os <- sgo_points(list(longitude = obs$longitude,
+                          latitude = obs$latitude),
                      epsg = 4326) %>%
       sgo_lonlat_bng() %>%
       sgo_bng_ngr() 
@@ -191,13 +191,13 @@ shinyServer(function(input, output) {
     
     os <- gsub(" ", "", os)
     
-    allFiltered$os = os
-    allFiltered$os1km = paste0(str_sub(os,1,4),str_sub(os,8,9))
+    obs$os = os
+    obs$os1km = paste0(str_sub(os,1,4),str_sub(os,8,9))
     
     # find and append details of nearest hotspots
-    allFiltered = attachNearestHotspots(allFiltered, hotspots)
+    obs = attachNearestHotspots(obs, hotspots)
     
-    allFiltered %>% select(
+    obs %>% select(
       species = BOU_Ebird_common_name,
       scientific_name,
       subspecies_common_name,
