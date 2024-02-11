@@ -14,6 +14,8 @@ suppressPackageStartupMessages(
   library(htmltools)
   library(sf)
   library(fs)
+  library(arrow)
+  library(duckdb)
 })
 
 source("helpers/eBirdFileHelpers.R")
@@ -69,15 +71,21 @@ shinyServer(function(input, output) {
   #   values$shp_upload_state <- 'reset'
   # })
   
-  
-  
   observerData = reactive({
     req(input$uploadUsers$datapath)
     
-    read_tsv(input$uploadUsers$datapath,
-             show_col_types = F) %>%
-      mutate(full_name = paste(first_name, last_name))
+    a = open_dataset(
+      sources = input$uploadUsers$datapath, 
+      # col_types = schema(ISBN = string()),
+      format = "tsv"
+    )
+    
+    a %>% 
+      mutate(full_name = paste(first_name, last_name)) %>% 
+      select(observer_id,full_name) %>% 
+      to_duckdb()
   })
+  
   
   rawData = reactive({
     req(input$upload)
@@ -126,11 +134,15 @@ shinyServer(function(input, output) {
         str_glue("---------- Uploaded {nrow(raw)} rows data from {nCounties} county; most from {topCounty}\n"))
     
     if (isTruthy(input$uploadUsers)){
-      
+
       users <- observerData()
       
-      # join to user database
-      raw <- raw %>% left_join(users, by = "observer_id")
+      rawTbl = raw %>% to_duckdb()
+      
+      raw = rawTbl %>% 
+        left_join(users,
+                  by = "observer_id" ) %>% 
+        collect()
     }
     
     # if (isTruthy(customRegionBoundary())){
@@ -182,9 +194,9 @@ shinyServer(function(input, output) {
     allFiltered$os1km = paste0(str_sub(os,1,4),str_sub(os,8,9))
     
     # find and append details of nearest hotspots
-    withHotspots = attachNearestHotspots(allFiltered, hotspots)
+    allFiltered = attachNearestHotspots(allFiltered, hotspots)
     
-    output = withHotspots %>% select(
+    allFiltered %>% select(
       species = BOU_Ebird_common_name,
       scientific_name,
       subspecies_common_name,
@@ -209,8 +221,6 @@ shinyServer(function(input, output) {
       reviewed,
       any_of("full_name"))
   
-    
-    output
     
   })
   
