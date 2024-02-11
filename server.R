@@ -14,6 +14,7 @@ suppressPackageStartupMessages(
   library(htmltools)
   library(sf)
   library(fs)
+  library(dbplyr)
   library(arrow)
   library(duckdb)
 })
