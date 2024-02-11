@@ -132,7 +132,7 @@ shinyServer(function(input, output) {
     topCounty = head(counties$county,1)
     
     cat(file = stderr(),
-        str_glue("---------- Uploaded {nrow(obs)} rows data from {nCounties} county; most from {topCounty}\n\n"))
+        str_glue("---------- Uploaded {nrow(obs)} rows data from {nCounties} county; most from {topCounty}\n"))
     
     if (isTruthy(input$uploadUsers)){
 
@@ -144,6 +144,9 @@ shinyServer(function(input, output) {
         left_join(users,
                   by = "observer_id" ) %>% 
         collect()
+      
+      rm(rawTbl)
+      gc()
     }
     
     # if (isTruthy(customRegionBoundary())){
