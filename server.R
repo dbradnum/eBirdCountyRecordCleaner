@@ -59,6 +59,10 @@ shinyServer(function(input, output) {
     left_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
+  duckCon = dbConnect(duckdb(), 
+                      dbdir = tempfile(fileext = ".duckdb"), 
+                      read_only = FALSE)
+
   
   # values <- reactiveValues(
   #   shp_upload_state = NULL
@@ -84,7 +88,7 @@ shinyServer(function(input, output) {
     a %>% 
       mutate(full_name = paste(first_name, last_name)) %>% 
       select(observer_id,full_name) %>% 
-      to_duckdb()
+      to_duckdb(con = duckCon)
   })
   
   
@@ -138,15 +142,12 @@ shinyServer(function(input, output) {
 
       users <- observerData()
       
-      rawTbl = obs %>% to_duckdb()
+      rawTbl = obs %>% to_duckdb(con = duckCon)
       
       obs = rawTbl %>% 
         left_join(users,
                   by = "observer_id" ) %>% 
         collect()
-      
-      rm(rawTbl)
-      gc()
     }
     
     # if (isTruthy(customRegionBoundary())){
