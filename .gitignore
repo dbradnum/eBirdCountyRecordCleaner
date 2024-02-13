@@ -42,7 +42,7 @@ rsconnect/*
 appTestInput/*
 localTemp/*
 rawShapeFiles/*
-refData/oldTaxonomy/*
+oldTaxonomy/*
 
 *.html
 
