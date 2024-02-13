@@ -38,20 +38,23 @@ shinyServer(function(input, output) {
                   locale = locale(encoding = "CP1252"),
                   show_col_types = FALSE) %>%
     clean_names() %>%
-    select(1:5) %>%
+    select(1,3:5) %>%
     rename(
       BOU_vernacular_name = british_english_vernacular_name,
       BOU_category = category
     ) %>% 
     mutate(codes = replace_na(codes,""),
            BBRC_species = str_detect(codes,"†"),
-           BBRC_subspecies = str_detect(codes,"‡"))
+           BBRC_subspecies = str_detect(codes,"‡")) %>% 
+    select(-codes,-BOU_category)
   
-  ebirdTaxonomy = read_csv("refData/NEW_eBird-Clements-v2022-integrated-checklist-October-2022.csv",
-                           show_col_types = F) %>% 
+  ebirdTaxonomy = read_csv("refData/eBird-Clements-v2023-integrated-checklist-October-2023.csv",
+                           show_col_types = F,
+                           col_types = paste0("n",strrep("c",16))) %>% 
     clean_names() %>% 
-    select(primary_com_name,category) %>% 
-    rename(eBird_category = category)
+    select(english_name,category) %>% 
+    rename(eBird_category = category) %>% 
+    mutate(eBird_category = as.factor(eBird_category))
   
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
@@ -62,6 +65,8 @@ shinyServer(function(input, output) {
   duckCon = dbConnect(duckdb(), 
                       dbdir = tempfile(fileext = ".duckdb"), 
                       read_only = FALSE)
+  
+  dbExecute(conn = duckCon, paste0("SET memory_limit='200MB'"))
 
   
   # values <- reactiveValues(
@@ -147,7 +152,7 @@ shinyServer(function(input, output) {
       obs = rawTbl %>% 
         left_join(users,
                   by = "observer_id" ) %>% 
-        collect()
+        collect() 
     }
     
     # if (isTruthy(customRegionBoundary())){
@@ -173,17 +178,17 @@ shinyServer(function(input, output) {
     obs <- obs %>%
       left_join(bou, names, by = "scientific_name") %>%
       mutate(BOU_Ebird_common_name = coalesce(BOU_vernacular_name, common_name)) %>% 
-      left_join(ebirdTaxonomy,by = c("common_name" = "primary_com_name"))
+      left_join(ebirdTaxonomy,by = c("common_name" = "english_name")) %>% 
+      select(-BOU_vernacular_name,-common_name)
     
-    
-    # pull out separate date cols
-    obs <- obs %>%
-      mutate(
-        observation_day = day(observation_date),
-        observation_month = month(observation_date),
-        observation_year = year(observation_date)
-      )
-    
+    # # pull out separate date cols
+    # obs <- obs %>%
+    #   mutate(
+    #     observation_day = day(observation_date),
+    #     observation_month = month(observation_date),
+    #     observation_year = year(observation_date)
+    #   )
+    # 
     # calculate and add OS grid refs
     os <- sgo_points(list(longitude = obs$longitude,
                           latitude = obs$latitude),
@@ -220,7 +225,6 @@ shinyServer(function(input, output) {
       contains("nearestHotspot"),
       time_observations_started,
       observation_date, 
-      # observation_day:observation_year,
       species_comments,
       approved,
       reviewed,

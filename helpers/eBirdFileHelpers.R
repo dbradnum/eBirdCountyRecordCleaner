@@ -14,7 +14,7 @@ get_col_types <- function(header) {
     "GLOBAL UNIQUE IDENTIFIER" = "character",
     "LAST EDITED DATE" = "character",
     "TAXONOMIC ORDER" = "numeric",
-    "CATEGORY" = "character",
+    "CATEGORY" = "factor",
     "COMMON NAME" = "character",
     "SCIENTIFIC NAME" = "character",
     "SUBSPECIES COMMON NAME" = "character",
@@ -23,19 +23,19 @@ get_col_types <- function(header) {
     "BREEDING BIRD ATLAS CODE" = "character",
     "BREEDING BIRD ATLAS CATEGORY" = "character",
     "AGE/SEX" = "character",
-    "COUNTRY" = "character",
-    "COUNTRY CODE" = "character",
-    "STATE" = "character",
-    "STATE CODE" = "character",
-    "COUNTY" = "character",
-    "COUNTY CODE" = "character",
+    "COUNTRY" = "factor",
+    "COUNTRY CODE" = "factor",
+    "STATE" = "factor",
+    "STATE CODE" = "factor",
+    "COUNTY" = "factor",
+    "COUNTY CODE" = "factor",
     "IBA CODE" = "character",
     "BCR CODE" = "integer",
     "USFWS CODE" = "character",
     "ATLAS BLOCK" = "character",
     "LOCALITY" = "character",
     "LOCALITY ID" = "character",
-    "LOCALITY TYPE" = "character",
+    "LOCALITY TYPE" = "factor",
     "LATITUDE" = "numeric",
     "LONGITUDE" = "numeric",
     "OBSERVATION DATE" = "Date",
@@ -59,8 +59,9 @@ get_col_types <- function(header) {
     "REASON" = "character",
     "TRIP COMMENTS" = "character",
     "SPECIES COMMENTS" = "character",
-    "BREEDING CODE" = "character",
-    "BEHAVIOR CODE" = "character")
+    "BREEDING CODE" = "factor",
+    "BREEDING CATEGORY" = "factor",
+    "BEHAVIOR CODE" = "factor")
   
   # remove any columns not in header
   col_types <- col_types[names(col_types) %in% header]
@@ -75,7 +76,6 @@ get_col_types <- function(header) {
 }
 
 colsToKeep <- c(
-  "last_edited_date",
   "common_name",
   "scientific_name",
   "subspecies_common_name",
