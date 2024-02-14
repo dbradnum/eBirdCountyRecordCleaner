@@ -62,10 +62,10 @@ shinyServer(function(input, output) {
     left_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
-  duckCon = dbConnect(duckdb(), 
-                      dbdir = tempfile(fileext = ".duckdb"), 
+  duckCon = dbConnect(duckdb(),
+                      dbdir = tempfile(fileext = ".duckdb"),
                       read_only = FALSE)
-  
+
   dbExecute(conn = duckCon, paste0("SET memory_limit='200MB'"))
 
   
@@ -100,8 +100,13 @@ shinyServer(function(input, output) {
   rawData = reactive({
     req(input$upload)
     
-    extractDataFromEbirdZip(input$upload$datapath)
+    extracted = extractDataFromEbirdZip(input$upload$datapath)
     
+    validate(
+      need(!is.null(extracted), message = "Error: no eBird records data in zip file. Check that the zip is exactly as downloaded.")
+    )
+    
+    extracted
   })
   
   customRegionBoundary = reactive({

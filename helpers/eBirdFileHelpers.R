@@ -134,6 +134,10 @@ extractDataFromEbirdZip = function(zipFile){
     filter(str_detect(basename(Name),dataFileNamePattern)) %>% 
     filter(!str_detect(basename(Name),"sampling")) # exclude sampling files
   
+  if (nrow(toExtract) == 0){
+    return(NULL)
+  }
+  
   extracted = unzip(zipFile, files = toExtract$Name, exdir = tempdir())
   
   map_dfr(extracted,readEbirdRawFile,colsToKeep)
