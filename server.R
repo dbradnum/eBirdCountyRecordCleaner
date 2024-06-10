@@ -62,6 +62,8 @@ shinyServer(function(input, output) {
     left_join(regions,by = c("subnational2Code" = "code")) %>% 
     rename(county = name)
   
+  breedingCodeMap = read_csv("refData/eBirdBirdTrack_BreedingCodeMap.csv",show_col_types = FALSE)
+  
   duckCon = dbConnect(duckdb(),
                       dbdir = tempfile(fileext = ".duckdb"),
                       read_only = FALSE)
@@ -107,6 +109,10 @@ shinyServer(function(input, output) {
     )
     
     extracted
+  })
+  
+  outputFormat = reactive({
+    input$selectOutputFormat
   })
   
   customRegionBoundary = reactive({
@@ -234,8 +240,63 @@ shinyServer(function(input, output) {
       approved,
       reviewed,
       any_of("full_name"))
-  
     
+  })
+  
+  dataToExport = reactive({
+    output = data()
+    
+    exportFormat = outputFormat()
+    
+    if(exportFormat != OUTPUT_ORIGINAL) {
+      # rename cols
+      output = output %>% 
+        left_join(breedingCodeMap, by = c("breeding_code" = "eBird_BreedingCode")) %>% 
+        select(Species = species,
+               `Scientific name` = scientific_name,
+               Place = locality,
+               `Grid reference` = os,
+               Lat = latitude,
+               Long = longitude,
+               any_of("full_name"),
+               Date = observation_date,
+               `Start time` = time_observations_started,
+               Count = observation_count,
+               Comment = species_comments,
+               Plumage = age_sex,
+               `Breeding status` = BirdTrack_BreedingCode,
+               subspecies_common_name,
+               subspecies_scientific_name,
+               BBRC_species,
+               eBird_category,
+               breeding_category,
+               behavior_code,
+               county,
+               os1km,
+               contains("nearestHotspot"),
+               approved,
+               reviewed) 
+    }
+    
+    if (exportFormat == OUTPUT_BIRDTRACK){
+      # remove extra cols
+      output = output %>% 
+        select(
+          -subspecies_common_name,
+          -subspecies_scientific_name,
+          -BBRC_species,
+          -eBird_category,
+          -breeding_category,
+          -behavior_code,
+          -county,
+          -os1km,
+          -contains("nearestHotspot"),
+          -approved,
+          -reviewed
+        )
+    }
+    
+    output
   })
   
   output$tbl = renderDT(
@@ -279,7 +340,7 @@ shinyServer(function(input, output) {
     filename = function() {
       "cleanedEbirdData.csv"},
     content = function(file) {
-      write_csv(data(), file, na = "") 
+      write_csv(dataToExport(), file, na = "") 
     }
   )
   

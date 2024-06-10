@@ -23,6 +23,12 @@ shinyUI(fluidPage(
       fileInput("uploadUsers", "Choose tab-separated Observer List",
                 accept = c(".txt",".tsv")),
       
+      selectInput("selectOutputFormat",
+                  "Choose output format",
+                  choices = c(OUTPUT_ORIGINAL,
+                              OUTPUT_BIRDTRACK,
+                              OUTPUT_BIRDTRACKPLUS)),
+      
       # fileInput("uploadShapefile", "Experimental: Choose region shapefile (zipped)",
       #           accept = c(".zip")),
       # actionButton('resetShapeFile', 'Clear Shapefile'),
