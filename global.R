@@ -1,3 +1,3 @@
 OUTPUT_ORIGINAL = "Original eBird"
-OUTPUT_BIRDTRACK = "BirdTrack strict"
-OUTPUT_BIRDTRACKPLUS = "BirdTrack plus additional info"
+OUTPUT_BIRDTRACK = "Experimental: BirdTrack columns only"
+OUTPUT_BIRDTRACKPLUS = "Experimental: BirdTrack plus additional info"
