@@ -34,7 +34,7 @@ ALL_SPECIES = "-- All Species --"
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   # import BOU list for species names
-  bou <- read_csv("refData/BOU_British_List_working-to-10th-and-54th-w-11_2-v3.csv",
+  bou <- read_csv("refData/BOU_British_List_10th-and-56th_IOC13_2_v2.csv",
                   locale = locale(encoding = "CP1252"),
                   show_col_types = FALSE) %>%
     clean_names() %>%
@@ -48,14 +48,15 @@ shinyServer(function(input, output) {
            BBRC_subspecies = str_detect(codes,"‡")) %>% 
     select(-codes,-BOU_category)
   
-  ebirdTaxonomy = read_csv("refData/eBird-Clements-v2023-integrated-checklist-October-2023.csv",
+  ebirdTaxonomy = read_csv("refData/eBird-Clements-v2024-integrated-checklist-October-2024-rev.csv",
                            show_col_types = F,
                            col_types = paste0("n",strrep("c",16))) %>% 
     clean_names() %>% 
     select(english_name,category) %>% 
     rename(eBird_category = category) %>% 
-    mutate(eBird_category = as.factor(eBird_category))
-  
+    filter(eBird_category != "family") %>% # in order to avoid dups with eg Osprey
+    mutate(eBird_category = as.factor(eBird_category)) 
+    
   regions = read_csv("refData/eBirdRegions.csv",show_col_types = FALSE)
   
   hotspots = read_csv("refData/GBHotspots.csv",show_col_types = FALSE) %>% 
