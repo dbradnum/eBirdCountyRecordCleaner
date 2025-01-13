@@ -17,6 +17,7 @@ suppressPackageStartupMessages(
   library(dbplyr)
   library(arrow)
   library(duckdb)
+  library(markdown)
 })
 
 source("helpers/eBirdFileHelpers.R")
