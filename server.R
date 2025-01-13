@@ -236,7 +236,9 @@ shinyServer(function(input, output) {
       os1km,
       contains("nearestHotspot"),
       time_observations_started,
-      observation_date, 
+      observation_date,
+      duration_minutes,
+      effort_distance_km,
       species_comments,
       approved,
       reviewed,
@@ -275,6 +277,8 @@ shinyServer(function(input, output) {
                county,
                os1km,
                contains("nearestHotspot"),
+               duration_minutes,
+               effort_distance_km,
                approved,
                reviewed) 
     }
@@ -293,7 +297,10 @@ shinyServer(function(input, output) {
           -os1km,
           -contains("nearestHotspot"),
           -approved,
-          -reviewed
+          -reviewed,
+          -duration_minutes,
+          -effort_distance_km
+          
         )
     }
     

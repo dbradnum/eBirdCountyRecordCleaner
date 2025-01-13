@@ -95,6 +95,8 @@ colsToKeep <- c(
   "latitude",
   "longitude",
   "time_observations_started",
+  "duration_minutes",
+  "effort_distance_km",
   "observer_id",
   "approved",
   "reviewed"
