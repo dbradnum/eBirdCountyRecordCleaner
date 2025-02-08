@@ -4,6 +4,7 @@ suppressPackageStartupMessages(
     library(shiny)
     library(shinycssloaders)
     library(leaflet)
+    library(leaflet.extras)
   })
 
 # Define UI for application that draws a histogram

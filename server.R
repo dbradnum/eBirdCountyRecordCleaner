@@ -348,7 +348,8 @@ shinyServer(function(input, output) {
                  lng = ~longitude,
                  lat = ~latitude,
                  clusterOptions = markerClusterOptions()
-      )
+      ) %>% 
+      addSearchOSM()
     
   })
   
