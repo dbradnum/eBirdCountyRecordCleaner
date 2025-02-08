@@ -23,6 +23,9 @@ shinyUI(fluidPage(
       fileInput("uploadUsers", "Choose tab-separated Observer List",
                 accept = c(".txt",".tsv")),
       
+      checkboxInput("includeWatsonian",
+                    "Include Watsonian counties?"),
+      
       selectInput("selectOutputFormat",
                   "Choose output format",
                   choices = c(OUTPUT_ORIGINAL,

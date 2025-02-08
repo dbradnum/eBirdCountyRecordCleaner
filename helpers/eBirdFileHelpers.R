@@ -193,7 +193,8 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
     inner_join(nonHotspots,by = "siteId") %>% 
     select(locality, latitude,longitude,contains("_"))
   
-  eBirdRecords %>% left_join(nearest, by = c("locality", "latitude", "longitude"))
+  eBirdRecords %>% 
+    left_join(nearest, by = c("locality", "latitude", "longitude")) 
   
 }
 
@@ -213,7 +214,9 @@ attachWatsonianCounties = function(eBirdRecords){
     select(locality,latitude, longitude, VCNAME) %>% 
     st_drop_geometry()
   
-  eBirdRecords %>% left_join(locationsWithVC, 
-                             by = c("locality", "latitude", "longitude"))
+  eBirdRecords %>% 
+    left_join(locationsWithVC, 
+              by = c("locality", "latitude", "longitude")) %>% 
+    rename(WatsonianVC = VCNAME)
   
 }
