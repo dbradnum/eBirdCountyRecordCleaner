@@ -196,3 +196,24 @@ attachNearestHotspots = function(eBirdRecords,hotspots){
   eBirdRecords %>% left_join(nearest, by = c("locality", "latitude", "longitude"))
   
 }
+
+attachWatsonianCounties = function(eBirdRecords){
+  shpFile = "refData/WatsonianVC_withSuffolk/combined.shp"
+  
+  regionBounds = read_sf(shpFile) 
+  
+  sites = eBirdRecords %>% 
+    count(locality, latitude, longitude, 
+          name = "nRecords") %>%
+    st_as_sf(coords = c("longitude", "latitude"),
+             crs = 4326,
+             remove = F)
+  
+  locationsWithVC = st_join(sites, regionBounds, join = st_within) %>% 
+    select(locality,latitude, longitude, VCNAME) %>% 
+    st_drop_geometry()
+  
+  eBirdRecords %>% left_join(locationsWithVC, 
+                             by = c("locality", "latitude", "longitude"))
+  
+}

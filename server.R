@@ -219,6 +219,8 @@ shinyServer(function(input, output) {
     # find and append details of nearest hotspots
     obs = attachNearestHotspots(obs, hotspots)
     
+    obs = attachWatsonianCounties(obs)
+    
     obs %>% select(
       species = BOU_Ebird_common_name,
       scientific_name,
@@ -230,6 +232,7 @@ shinyServer(function(input, output) {
       observation_date,
       breeding_code:age_sex,
       county,
+      WatsonianVC = VCNAME,
       locality,
       latitude,
       longitude,
@@ -276,6 +279,7 @@ shinyServer(function(input, output) {
                breeding_category,
                behavior_code,
                county,
+               WatsonianVC,
                os1km,
                contains("nearestHotspot"),
                duration_minutes,
@@ -300,7 +304,8 @@ shinyServer(function(input, output) {
           -approved,
           -reviewed,
           -duration_minutes,
-          -effort_distance_km
+          -effort_distance_km,
+          -WatsonianVC
           
         )
     }
